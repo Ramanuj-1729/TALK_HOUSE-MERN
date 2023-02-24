@@ -35,7 +35,7 @@ class AuthController {
     }
 
     async verifyOtp(req, res) {
-        const { otp, hash, phone } = req.body;
+        const { otp, hash, phone } = req.body; 
 
         if (!otp || !hash || !phone) {
             res.status(400).json({ message: "All field required!" });
@@ -63,14 +63,18 @@ class AuthController {
             }
         } catch (error) {
             console.log(error);
-            res.status(500).json({message: "Db error"});
+            res.status(500).json({ message: "Db error" });
         }
 
         // Token
-        let accessToken;
-        let refreshToken;
+        const { accessToken, refreshToken } = tokenService.generateTokens({_id:user._id, activated: false});
 
-        tokenService.generateTokens
+        res.cookie('refreshToken', refreshToken, {
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+            httpOnly: true
+        });
+
+        res.json({ accessToken });
 
     }
 }
