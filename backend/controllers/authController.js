@@ -2,6 +2,7 @@ const hashService = require("../services/hashService");
 const otpService = require("../services/otpService");
 const tokenService = require("../services/tokenService");
 const userService = require("../services/userService");
+const UserDto = require('../dtos/user-dto');
 
 class AuthController {
     async sendOtp(req, res) {
@@ -22,10 +23,11 @@ class AuthController {
 
         // Send OTP
         try {
-            await otpService.sendBySms(phone, otp);
+            // await otpService.sendBySms(phone, otp);
             res.json({
                 hash: `${hash}.${expires}`,
                 phone,
+                otp,
             })
         } catch (error) {
             console.log(error);
@@ -35,7 +37,7 @@ class AuthController {
     }
 
     async verifyOtp(req, res) {
-        const { otp, hash, phone } = req.body; 
+        const { otp, hash, phone } = req.body;
 
         if (!otp || !hash || !phone) {
             res.status(400).json({ message: "All field required!" });
@@ -67,14 +69,15 @@ class AuthController {
         }
 
         // Token
-        const { accessToken, refreshToken } = tokenService.generateTokens({_id:user._id, activated: false});
+        const { accessToken, refreshToken } = tokenService.generateTokens({ _id: user._id, activated: false });
 
         res.cookie('refreshToken', refreshToken, {
             maxAge: 1000 * 60 * 60 * 24 * 30,
             httpOnly: true
         });
 
-        res.json({ accessToken });
+        const userDto = new UserDto(user);
+        res.json({ accessToken, user: userDto });
 
     }
 }
