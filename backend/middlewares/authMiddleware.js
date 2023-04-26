@@ -13,6 +13,6 @@ module.exports = async function(req, res, next) {
         req.user = userData;
         next();
     } catch (error) {
-        res.status(401).jaon({message: "Invalid Token"});
+        res.status(401).json({message: "Invalid Token"});
     }
 }

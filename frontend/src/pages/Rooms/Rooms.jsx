@@ -2,7 +2,11 @@ import React from 'react';
 
 const Rooms = () => {
     return (
-        <div>Rooms</div>
+        <>
+            <div className="container">
+                Rooms
+            </div>
+        </>
     );
 }
 
